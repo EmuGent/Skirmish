@@ -4,10 +4,12 @@
 function love.load()
     love.window.setMode(1920, 1080, {fullscreen = true})
     Object = require "libraries/classic"
+    require "moveable"
     require "player"
     require "monster"
     require "stage"
     require "coordinates"
+    
 
     Player1 = Player()
     Monster1 = Monster()
