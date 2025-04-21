@@ -1,6 +1,7 @@
 Player = Moveable:extend()
 
 function Player:new()
+    self.image = LoadImage("assets/Hero.png")
     self.size = {w = 50, h = 50}
     local default = ConvertCoordinateToCorner(DefaultPostion.Player, self.size)
     self.y = default.y
@@ -8,13 +9,15 @@ function Player:new()
     self.action = ""
     self.recall = false
     self.waittimer = 0
+    self.healthMax = 10
+    self.healthCurrent = self.healthMax
 end
 
 function Player:update(dt)
     --check the current action
     if self.action == "strike" then -- and (self.x + self.size.w < Midpoint.x) then
         local newPos = {x = self.x + 500*dt, y = self.y, size = {w = 50, h = 50}}
-        if not self.collisionCheck(newPos, SetStage) and not self.collisionCheck(newPos, Monster1) and self.recall == false then
+        if not self.collisionCheck(newPos, SetStage) and not self.collisionCheck(newPos, MonsterSelect:getMonster()) and self.recall == false then
             self.waittimer = 2
             self:move(newPos.x, newPos.y)
         else
@@ -22,7 +25,7 @@ function Player:update(dt)
             self.waittimer = self.waittimer - dt
             if self.waittimer < 0 then
                 newPos = {x = self.x - 500*dt, y = self.y, size = {w = 50, h = 50}}
-                if not self.collisionCheck(newPos, SetStage) and not self.collisionCheck(newPos, Monster1) and newPos.x > ConvertCoordinateToCorner(DefaultPostion.Player, self.size).x then
+                if not self.collisionCheck(newPos, SetStage) and not self.collisionCheck(newPos, MonsterSelect:getMonster()) and newPos.x > ConvertCoordinateToCorner(DefaultPostion.Player, self.size).x then
                 self:move(newPos.x, newPos.y)
                 else
                     self.action = ""
@@ -54,9 +57,14 @@ end
 
 function Player:draw()
     --draws the object
-    if self.action == "block" then love.graphics.setColor(.6, .6, 1) end
+    if self.action == "block" then love.graphics.setColor(.6, .6, 1) 
+    else love.graphics.setColor(.6, 1, 1) end
+    if Hitboxes then
     love.graphics.rectangle("line", self.x, self.y, self.size.h, self.size.w )
     love.graphics.setColor(1, 1, 1)
+    end
+    local imgW, imgH  = self.image:getDimensions()
+    love.graphics.draw(self.image, self.x, self.y, 0, self.size.w/imgW, self.size.h/imgH)
     --debug information, comment out later
     love.graphics.print("Current Y: "..self.y, 400, 300)
     love.graphics.print("Current X: "..self.x, 400, 320)

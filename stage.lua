@@ -9,7 +9,7 @@ end
 
 function Stage:draw()
     love.graphics.setColor(.6, 0, 0)
-    love.graphics.rectangle("fill", self.x, self.y, self.size.w, self.size.h )
+    love.graphics.rectangle("fill", self.x, self.y+1, self.size.w, self.size.h )
     love.graphics.setColor(1, 1, 1)
 end
 
