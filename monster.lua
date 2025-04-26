@@ -10,9 +10,9 @@ function Monster:new(position)
         [3] = DefaultPostion.Monster3,
         [4] = DefaultPostion.Monster4
     }
-    local default = ConvertCoordinateToCorner(posTable[position], self.size)
-    self.y = default.y
-    self.x = default.x
+    self.defaultPos = ConvertCoordinateToCorner(posTable[position], self.size)
+    self.y = self.defaultPos.y
+    self.x = self.defaultPos.x
     self.healthMax = 10
     self.isAlive = false
     if self.isAlive then 
@@ -20,10 +20,43 @@ function Monster:new(position)
     else
             self.healthCurrent = 0
     end
+    self.intent = ""
+    self.acting = false
+    self:randomIntent()
+    self.timer = 0
 end
 
 function Monster:update(dt)
-
+    if not self.isAlive then return true end
+    if self.acting == false then 
+    self.acting = true
+    self.timer = -1
+    end
+    if self.intent == "attack" then
+    local newPos = {x = self.x - 500*dt, y = self.y, size = {w = 50, h = 50}}
+        if not self.collisionCheck(newPos, SetStage) and not self.collisionCheck(newPos, MainPlayer) then
+          self:move(newPos.x, newPos.y)
+        else 
+            if self.timer < 0 then
+                self.timer = 2 + dt
+            end
+            self.timer = self.timer - dt
+            if self.timer <= 0 then 
+            MainPlayer:hit() 
+            self.intent = "return"
+            end
+        end
+    elseif self.intent == "return" then
+        local newPos = {x = self.x + 500*dt, y = self.y, size = {w = 50, h = 50}}
+        if not self.collisionCheck(newPos, SetStage) and self.x < self.defaultPos.x then
+            self:move(newPos.x, newPos.y)
+        else 
+            self:move(self.defaultPos.x, self.defaultPos.y)
+            self:randomIntent()
+            return true
+        end
+    end
+return false
 end
 
 function Monster:draw()
@@ -41,4 +74,21 @@ end
 function Monster:initialize()
     self.isAlive = true
     self.healthCurrent = self.healthMax
+end
+
+function Monster:hit()
+    if self.healthCurrent > 0 then
+    self.healthCurrent = self.healthCurrent-1
+    if self.healthCurrent == 0 then
+        self:die()
+    end
+end
+end
+
+function Monster:die()
+    self.isAlive = false
+end 
+
+function Monster:randomIntent()
+    self.intent = "attack"
 end

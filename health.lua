@@ -2,12 +2,6 @@ HealthBar = Moveable:extend()
 
 function HealthBar:new(reference)
     self.obj = reference
-    self.real = "FALSE"
-    if self.obj:is(Moveable) then
-        self.real = "TRUE"
-    else
-        self.real = "false"
-    end
     self.x = reference.x
     self.y = reference.y + 100
 end

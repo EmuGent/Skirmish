@@ -21,6 +21,7 @@ function Selector:new()
 end
 
 function Selector:control(key)
+    if GlobalPhase == "preturn" then
     if key == "right" then
             self.actions = {
                 self.actions[3],
@@ -34,6 +35,7 @@ function Selector:control(key)
                 self.actions[1]
             }
         end
+    end
 end
 
 function Selector:update(dt)
