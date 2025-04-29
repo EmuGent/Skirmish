@@ -11,6 +11,7 @@ function Player:new()
     self.waittimer = 0
     self.healthMax = 10
     self.healthCurrent = self.healthMax
+    self.isVulnerable = true
 end
 
 function Player:update(dt)
@@ -27,7 +28,7 @@ function Player:update(dt)
             self.waittimer = self.waittimer - dt
             if self.waittimer < 0 then
                 newPos = {x = self.x - 500*dt, y = self.y, size = {w = 50, h = 50}}
-                if not self.collisionCheck(newPos, SetStage) and not self.collisionCheck(newPos, MonsterSelect:getMonster()) and newPos.x > ConvertCoordinateToCorner(DefaultPostion.Player, self.size).x then
+                if not self.collisionCheck(newPos, SetStage) and newPos.x > ConvertCoordinateToCorner(DefaultPostion.Player, self.size).x then
                 self:move(newPos.x, newPos.y)
                 else
                     self:move(self.defaultPos.x, self.defaultPos.y)
@@ -38,11 +39,14 @@ function Player:update(dt)
             end
         end
     elseif self.action == "block" then
-        if self.waittimer <= 0 then
-            self.waittimer = 5
+        if GlobalPhase == "preturn" then GlobalPhase = "playerturn" end
+        self.isVulnerable = false
+        self:heal(1)
+        if GlobalPhase == "playerturn" then 
+            GlobalPhase = "monsterturn" 
+            self.action = ""
         end
-        self.waittimer = self.waittimer-dt
-        if self.waittimer <= 0 then self.action = "" end
+    elseif self.action == "select" then
     elseif self.action == "run" then
         self.x = self.x - 500*dt
         if self.x < -60 then
@@ -54,17 +58,20 @@ function Player:update(dt)
 end
 
 function Player:control(key)
-    if key == "space" and self.action == "" then
+    if key == "space" and self.action == "" and GlobalPhase == "preturn" then
             self.action = ActionSelect.actions[2].command
     end
-    if key == "space" and self.action == "strike" and Timer:isReady() then
+    if key == "space" and self.action == "strike" and Timer:isReady() and GlobalPhase == "playerturn" then
         MonsterSelect:getMonster():hit()
+    end
+    if key == "space" and GlobalPhase == "monsterturn" and Timer:isReady() then
+        self.isVulnerable = false
     end
 end
 
 function Player:draw()
     --draws the object
-    if self.action == "block" then love.graphics.setColor(.6, .6, 1) 
+    if self.action == "block" or self.isVulnerable == false then love.graphics.setColor(.6, .6, 1) 
     else love.graphics.setColor(1, 1, 1) end
     if Hitboxes then
     love.graphics.rectangle("line", self.x, self.y, self.size.h, self.size.w )
@@ -88,10 +95,21 @@ function Player:release()
 end
 
 function Player:hit()
-    if self.healthCurrent > 0 then
+    if self.healthCurrent > 0 and self.isVulnerable then
     self.healthCurrent = self.healthCurrent-1
+    else 
+        self.isVulnerable = true
     if self.healthCurrent == 0 then
-        
+        GlobalPhase = "dead"
     end
 end
+end
+
+function Player:heal(n)
+    if self.healthCurrent < self.healthMax then
+        self.healthCurrent = self.healthCurrent + n
+        while self.healthCurrent > self.healthMax do
+            self.healthCurrent = self.healthCurrent - 1
+        end
+    end
 end

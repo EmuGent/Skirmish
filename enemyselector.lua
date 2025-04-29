@@ -1,28 +1,42 @@
 BattleChoice = Moveable:extend()
 local scaleFactor = 50
 
-function BattleChoice:new(Slot1, Slot2, Slot3, Slot4)
+function BattleChoice:new(Mon1, Mon2, Mon3, Mon4)
     self.image = LoadImage("assets/Arrow.png")
-    if BattleChoice:select(Slot1) then
-    elseif BattleChoice:select(Slot2) then
-    elseif BattleChoice:select(Slot3) then
-    elseif BattleChoice:select(Slot4) then
+    if BattleChoice:select(Mon1) then
+    elseif BattleChoice:select(Mon2) then
+    elseif BattleChoice:select(Mon3) then
+    elseif BattleChoice:select(Mon4) then
     else
         self.selected = 1
-        self.x = Slot1.x
-        self.y = Slot1.y - 100
+        self.x = Mon1.x
+        self.y = Mon1.y - 100
         self.rendered = false
     end
 end
 
-function BattleChoice:select(slot)
-    if slot.isAlive then
-        self.selected = slot.currentSlot
-        self.x = slot.x
-        self.y = slot.y - 100
+function BattleChoice:select(mon)
+    if mon.isAlive then
+        self.selected = mon.currentSlot
+        self.x = mon.x
+        self.y = mon.y - 100
         self.rendered = true
         return true
     else
+        return false
+    end
+end
+
+function BattleChoice:selectNew()
+    if AllMonsters[self.selected].isAlive then
+        return true
+    else
+        for i, m in ipairs(AllMonsters) do
+            if m.isAlive then 
+                self:select(m)
+                return true
+            end
+        end
         return false
     end
 end
@@ -37,11 +51,32 @@ function BattleChoice:getMonster()
     return monsters[self.selected]
 end
 
+function BattleChoice:control(key)
+    if MainPlayer.action == "select" then
+        if key == "right" then
+            for i=1, 4 do
+                if self:select(AllMonsters[(self.selected+i-1)%4+1]) then
+                    return true
+                end
+            end
+        elseif key == "left" then
+            for i=1, 4 do
+                if self:select(AllMonsters[(self.selected-i-1)%4+1]) then
+                    return true
+                end
+            end
+        elseif key == "space" then
+            MainPlayer.action = "strike"
+        end
 
+    end
+end
 
 function BattleChoice:draw()
-    if self.rendered then
+    if self.rendered and GlobalPhase == "preturn" then
         local imgW, imgH = self.image:getDimensions()
         love.graphics.draw(self.image, self.x, self.y, 0, scaleFactor/imgW, scaleFactor/imgH)
+            love.graphics.print("Selected: "..self.selected, 400, 380)
+
     end
 end

@@ -10,7 +10,7 @@ end
 
 function Selector:new()
     self.actions = {
-                    action("Attack", "strike", 1, 0, 0),
+                    action("Attack", "select", 1, 0, 0),
                     action("Defend", "block", .6, .6, 1), 
                     action("Escape", "run", 1, 1, 0)
                     }
@@ -21,7 +21,7 @@ function Selector:new()
 end
 
 function Selector:control(key)
-    if GlobalPhase == "preturn" then
+    if GlobalPhase == "preturn" and MainPlayer.action == "" then
     if key == "right" then
             self.actions = {
                 self.actions[3],
@@ -44,6 +44,7 @@ end
 
 function Selector:draw()
     local offset = -100
+    if GlobalPhase == "preturn" then
     for k, v in ipairs(self.actions) do
         love.graphics.setColor(v.r, v.g, v.b)
         love.graphics.rectangle("fill", self.x+offset, self.y-100, 50, 50)
@@ -54,4 +55,5 @@ function Selector:draw()
     love.graphics.setColor(0, 1, 0)
     love.graphics.rectangle("line", self.x-5, self.y-105, 60, 60)
     love.graphics.setColor(1, 1, 1)
+end
 end

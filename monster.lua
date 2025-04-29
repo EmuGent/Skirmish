@@ -13,7 +13,7 @@ function Monster:new(position)
     self.defaultPos = ConvertCoordinateToCorner(posTable[position], self.size)
     self.y = self.defaultPos.y
     self.x = self.defaultPos.x
-    self.healthMax = 10
+    self.healthMax = 5
     self.isAlive = false
     if self.isAlive then 
             self.healthCurrent = self.healthMax
@@ -39,6 +39,7 @@ function Monster:update(dt)
         else 
             if self.timer < 0 then
                 self.timer = 2 + dt
+                Timer:call(self)
             end
             self.timer = self.timer - dt
             if self.timer <= 0 then 
@@ -87,6 +88,9 @@ end
 
 function Monster:die()
     self.isAlive = false
+    if not MonsterSelect:selectNew() then
+                --love.event.quit(0)
+    end
 end 
 
 function Monster:randomIntent()

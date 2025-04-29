@@ -9,9 +9,9 @@ function timerObj:new()
     self.hit = false
 end
 
-function timerObj:call(player)
-    self.x = player.x
-    self.y = player.y - 80
+function timerObj:call(actor)
+    self.x = actor.x
+    self.y = actor.y - 80
     self.hit = false
     self.state = self.red
     self.count = 0

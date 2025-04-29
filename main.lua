@@ -35,11 +35,12 @@ function love.load()
     MonsterTurn = 1
 
     -- Put all rendered objects in a table
-    Drawables = {MainPlayer, Monster1, Monster2, Monster3, Monster4, SetStage, ActionSelect, PlayerHealthBar, MhpBar.MHP1, MhpBar.MHP2, MhpBar.MHP3, MhpBar.MHP4, MonsterSelect, Timer}
+    Drawables = {Monster1, Monster2, Monster3, Monster4, SetStage, ActionSelect, PlayerHealthBar, MhpBar.MHP1, MhpBar.MHP2, MhpBar.MHP3, MhpBar.MHP4, MonsterSelect, Timer, MainPlayer}
 
     --Alive a monster
     Monster2:initialize()
-    --Monster3:initialize()
+    Monster3:initialize()
+    Monster4:initialize()
     MonsterSelect:select(Monster2)
 end
 
@@ -71,6 +72,7 @@ function love.draw()
 end
 
 function love.keypressed(key, scancode, isrepeat)
+    MonsterSelect:control(key)
     MainPlayer:control(key)
     ActionSelect:control(key)
 end
