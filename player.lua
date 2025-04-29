@@ -2,7 +2,7 @@ Player = Moveable:extend()
 
 function Player:new()
     self.image = LoadImage("assets/Hero.png")
-    self.size = {w = 50, h = 50}
+    self.size = {w = GlobalScale, h = GlobalScale}
     self.defaultPos = ConvertCoordinateToCorner(DefaultPostion.Player, self.size)
     self.y = self.defaultPos.y
     self.x = self.defaultPos.x
@@ -18,7 +18,7 @@ function Player:update(dt)
     --check the current action
     if self.action == "strike" then -- and (self.x + self.size.w < Midpoint.x) then
         GlobalPhase = "playerturn"
-        local newPos = {x = self.x + 500*dt, y = self.y, size = {w = 50, h = 50}}
+        local newPos = {x = self.x + 500*dt, y = self.y, size = self.size}
         if not self.collisionCheck(newPos, SetStage) and not self.collisionCheck(newPos, MonsterSelect:getMonster()) and self.recall == false then
             self.waittimer = 4
             self:move(newPos.x, newPos.y)
@@ -79,10 +79,12 @@ function Player:draw()
     local imgW, imgH  = self.image:getDimensions()
     love.graphics.draw(self.image, self.x, self.y, 0, self.size.w/imgW, self.size.h/imgH)
     love.graphics.setColor(1, 1, 1)
-    --debug information, comment out later
+    --debug information
+    if Debug then
     love.graphics.print("GlobalPhase: "..GlobalPhase, 400, 300)
     love.graphics.print("Current X: "..self.x, 400, 320)
     love.graphics.print("Current Action: "..self.action, 400, 340)
+    end
 end
 
 function Player:release()

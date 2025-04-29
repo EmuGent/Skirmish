@@ -2,7 +2,7 @@ Monster = Moveable:extend()
 
 function Monster:new(position)
     self.image = LoadImage("assets/Mush.png")
-    self.size = {w = 50, h = 50}
+    self.size = {w = GlobalScale, h = GlobalScale}
     self.currentSlot = position
     local posTable = {
         [1] = DefaultPostion.Monster1,
@@ -38,8 +38,10 @@ function Monster:update(dt)
           self:move(newPos.x, newPos.y)
         else 
             if self.timer < 0 then
-                self.timer = 2 + dt
-                Timer:call(self)
+                local timeScale = love.math.random(125)
+                timeScale = timeScale/100+0.5
+                Timer:call(self, timeScale)
+                self.timer = 2*timeScale + dt
             end
             self.timer = self.timer - dt
             if self.timer <= 0 then 
@@ -48,7 +50,7 @@ function Monster:update(dt)
             end
         end
     elseif self.intent == "return" then
-        local newPos = {x = self.x + 500*dt, y = self.y, size = {w = 50, h = 50}}
+        local newPos = {x = self.x + 500*dt, y = self.y, size = {w = GlobalScale, h = GlobalScale}}
         if not self.collisionCheck(newPos, SetStage) and self.x < self.defaultPos.x then
             self:move(newPos.x, newPos.y)
         else 
@@ -63,12 +65,13 @@ end
 function Monster:draw()
     if self.isAlive then
     local imgW, imgH  = self.image:getDimensions()
+    if self:collisionCheck(MainPlayer) then love.graphics.setColor(.4, .4, .4) end
     love.graphics.draw(self.image, self.x, self.y, 0, self.size.w/imgW, self.size.h/imgH)
     if Hitboxes then
     love.graphics.setColor(0, 0, 1)
     love.graphics.rectangle("line", self.x, self.y, self.size.h, self.size.w )
-    love.graphics.setColor(1, 1, 1)
     end
+    love.graphics.setColor(1, 1, 1)
     end
 end
 
@@ -89,7 +92,7 @@ end
 function Monster:die()
     self.isAlive = false
     if not MonsterSelect:selectNew() then
-                --love.event.quit(0)
+                GlobalPhase = "win"
     end
 end 
 

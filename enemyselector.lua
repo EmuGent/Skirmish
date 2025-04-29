@@ -1,5 +1,5 @@
 BattleChoice = Moveable:extend()
-local scaleFactor = 50
+local scaleFactor = GlobalScale
 
 function BattleChoice:new(Mon1, Mon2, Mon3, Mon4)
     self.image = LoadImage("assets/Arrow.png")
@@ -10,7 +10,7 @@ function BattleChoice:new(Mon1, Mon2, Mon3, Mon4)
     else
         self.selected = 1
         self.x = Mon1.x
-        self.y = Mon1.y - 100
+        self.y = Mon1.y - GlobalScale * 2
         self.rendered = false
     end
 end
@@ -19,7 +19,7 @@ function BattleChoice:select(mon)
     if mon.isAlive then
         self.selected = mon.currentSlot
         self.x = mon.x
-        self.y = mon.y - 100
+        self.y = mon.y - GlobalScale * 2
         self.rendered = true
         return true
     else
@@ -67,13 +67,15 @@ function BattleChoice:control(key)
             end
         elseif key == "space" then
             MainPlayer.action = "strike"
+        elseif key == "escape" then
+            MainPlayer.action = ""
         end
 
     end
 end
 
 function BattleChoice:draw()
-    if self.rendered and GlobalPhase == "preturn" then
+    if self.rendered and GlobalPhase == "preturn" and MainPlayer.action == "select" then
         local imgW, imgH = self.image:getDimensions()
         love.graphics.draw(self.image, self.x, self.y, 0, scaleFactor/imgW, scaleFactor/imgH)
             love.graphics.print("Selected: "..self.selected, 400, 380)

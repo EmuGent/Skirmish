@@ -1,6 +1,8 @@
 -- get the game screen without the bottom stage
 local window_w, window_h = love.graphics.getDimensions()
+GlobalScale = window_h/10
 window_h = window_h - window_h/8
+
 
 Midpoint = {x = window_w/2, y = window_h}
 DefaultPostion = {
