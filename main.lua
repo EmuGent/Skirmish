@@ -5,7 +5,7 @@ function love.load()
     --Set window size
     love.window.setMode(1920, 1080, {fullscreen = true})
     --Debug Flags
-    Debug = true
+    Debug = false
     Hitboxes = false
     --Load all other files
     require "functions"
@@ -19,7 +19,9 @@ function love.load()
     require "health"
     require "enemyselector"
     require "timer"
+    --Load background image
     bg = LoadImage("assets/defaultBackground.png")
+    --Set the fonts for use in game
     MainFont = love.graphics.newFont("fonts/ARLRDBD.TTF", 14)
     MessageFont = love.graphics.newFont("fonts/ARLRDBD.TTF", 48)
     MainFont:setFilter("nearest", "nearest")
@@ -43,7 +45,7 @@ function love.load()
     -- Put all rendered objects in a table
     Drawables = {Monster1, Monster2, Monster3, Monster4, SetStage, ActionSelect, PlayerHealthBar, MhpBar.MHP1, MhpBar.MHP2, MhpBar.MHP3, MhpBar.MHP4, MonsterSelect, Timer, MainPlayer}
 
-    --Alive a monster
+    --Alive the monsters
     Monster2:initialize()
     Monster3:initialize()
     Monster4:initialize()
@@ -55,6 +57,7 @@ end
 function love.update(dt)
     MainPlayer:update(dt)
     Timer:update(dt)
+    --This if controls the monster turn entirely
     if GlobalPhase == "monsterturn" then 
         if AllMonsters[MonsterTurn]:update(dt) then
             MonsterTurn = MonsterTurn+1
@@ -63,6 +66,7 @@ function love.update(dt)
             GlobalPhase = "preturn" 
             MonsterTurn = 1
         end
+    --Currently empty win/lose conditions
     elseif GlobalPhase == "win" then 
 
     elseif GlobalPhase == "dead" then
@@ -75,6 +79,7 @@ function love.update(dt)
 end
 
 --love.draw is the rendering function.
+--Draws the background, then uses the Drawables table to call the draw function on each object.
 function love.draw()
     love.graphics.draw(bg, 0, 0, 0, 0.8, 0.8)
     for index, value in ipairs(Drawables) do
@@ -82,6 +87,8 @@ function love.draw()
     end
 end
 
+--This function override's love2d's keypressed function and is the correct implementation to implement controls.
+--This implementation calls each objects control function that needs player input
 function love.keypressed(key, scancode, isrepeat)
     MonsterSelect:control(key)
     MainPlayer:control(key)

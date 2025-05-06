@@ -1,18 +1,22 @@
 Moveable = Object:extend()
+--Sample object that is used for any object with a position within the game space.
 
 function Moveable:new()
+    --Default size and position values to hopefully prevent crashes.
     self.size = {w = 0, h = 0}
     self.x = 0
     self.y = 0
 end
 
 function Moveable:move(x, y)
+    --Sets a new x, y
     self.x = x
     self.y = y
     return true
 end
 
 function Moveable.collisionCheck(a, b)
+    --Simple algorithm to determine if two boxes are intersecting.
     local left = {p = b.x, c = a.x}
     local right = {p = b.x+b.size.w, c = a.x+a.size.w}
     local top = {p = b.y, c = a.y}

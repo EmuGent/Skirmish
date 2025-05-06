@@ -2,6 +2,7 @@ BattleChoice = Moveable:extend()
 local scaleFactor = GlobalScale
 
 function BattleChoice:new(Mon1, Mon2, Mon3, Mon4)
+    --Load an image then attempt to pre-select a monster.
     self.image = LoadImage("assets/Arrow.png")
     if BattleChoice:select(Mon1) then
     elseif BattleChoice:select(Mon2) then
@@ -16,6 +17,7 @@ function BattleChoice:new(Mon1, Mon2, Mon3, Mon4)
 end
 
 function BattleChoice:select(mon)
+    --Checks the alive state of a monster, switching to it if it is alive.
     if mon.isAlive then
         self.selected = mon.currentSlot
         self.x = mon.x
@@ -28,6 +30,7 @@ function BattleChoice:select(mon)
 end
 
 function BattleChoice:selectNew()
+    --Automatically scrolls to the next monster for when the current one dies.
     if AllMonsters[self.selected].isAlive then
         return true
     else
@@ -42,6 +45,7 @@ function BattleChoice:selectNew()
 end
 
 function BattleChoice:getMonster()
+    --returns the monster object selected by the enemyselector.
     local monsters = {
         [1] = Monster1,
         [2] = Monster2,
@@ -52,6 +56,7 @@ function BattleChoice:getMonster()
 end
 
 function BattleChoice:control(key)
+    --Does the controls for selecting the monster when attempting to attack.
     if MainPlayer.action == "select" then
         if key == "right" then
             for i=1, 4 do
@@ -75,10 +80,12 @@ function BattleChoice:control(key)
 end
 
 function BattleChoice:draw()
+    --Only draw the arrow when selecting a monster
     if self.rendered and GlobalPhase == "preturn" and MainPlayer.action == "select" then
         local imgW, imgH = self.image:getDimensions()
         love.graphics.draw(self.image, self.x, self.y, 0, scaleFactor/imgW, scaleFactor/imgH)
-            love.graphics.print("Selected: "..self.selected, 400, 380)
+        
+        if Debug then love.graphics.print("Selected: "..self.selected, 400, 380) end
 
     end
 end

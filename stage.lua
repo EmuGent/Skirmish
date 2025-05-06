@@ -1,4 +1,4 @@
--- The background elements for the game.
+-- The background floor for the game. Nothing should ever intersect this.
 Stage = Moveable:extend()
 function Stage:new()
     local window_w, window_h = love.graphics.getDimensions()
@@ -9,10 +9,11 @@ end
 
 function Stage:draw()
     love.graphics.setColor(0, .6, 0)
-    love.graphics.rectangle("fill", self.x, self.y+1, self.size.w, self.size.h )
+    love.graphics.rectangle("fill", self.x, self.y, self.size.w, self.size.h )
     love.graphics.setColor(1, 1, 1)
 end
 
 function Stage:move()
+    --make immovable
     return false
 end

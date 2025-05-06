@@ -1,14 +1,16 @@
 Selector = Moveable:extend()
-local action = Moveable:extend()
+local action = Object:extend()
 local localScale = GlobalScale*0.8
 
 function action:new(text, command, r, g, b)
+    --Action object seperate to store the action information
     self.text = text
     self.r, self.g, self.b = r, g, b
     self.command = command
 end
 
 function Selector:new()
+    --Loads the actions, their text box, and the color of the box.
     self.actions = {
                     action("Escape", "run", 1, 1, 0),            
                     action("Attack", "select", 1, 0, 0),
@@ -22,6 +24,7 @@ end
 
 function Selector:control(key)
     if GlobalPhase == "preturn" and MainPlayer.action == "" then
+    --rotates the actions by resorting the table.
     if key == "right" then
             self.actions = {
                 self.actions[3],
@@ -38,11 +41,10 @@ function Selector:control(key)
     end
 end
 
-function Selector:update(dt)
-    
-end
 
 function Selector:draw()
+    --Only renders during the preturn phase, then renders each value in the table being offset each time.
+    --This implementation means I could add more action boxes seamlessly.
     local offset = -(localScale*2)
     if GlobalPhase == "preturn" then
     for k, v in ipairs(self.actions) do
